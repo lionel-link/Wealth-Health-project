@@ -1,0 +1,23 @@
+
+
+.rdp.DayPickerBirth {
+    background: ghostwhite;
+}
+
+.DayPickerBirthContainer {
+    display: none;
+    position: fixed;
+    top: 166px;
+    left: 900px;
+}
+
+.DayPickerStartContainer {
+    display: none;
+    position: fixed;
+    top: 406px;
+    left: 900px;
+}
+
+.Customform {
+    margin: 50px 0;
+}
