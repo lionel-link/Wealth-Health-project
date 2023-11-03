@@ -1,14 +1,14 @@
 import './CustomerForm.css';
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { DayPicker } from 'react-day-picker';
 import { format } from 'date-fns';
 import 'react-day-picker/dist/style.css';
-import Modal from '../Modal/Modal';
+import {Modal} from 'modal-react-wealth-health';
 import { save } from './../../features/employeeSlice';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
+
 
 function CustomerForm() {
   const statesDB = [
@@ -258,16 +258,6 @@ function CustomerForm() {
   const formref = useRef();
   const refstart = useRef();
 
-  const reffirstname = useRef();
-  const reflastname = useRef();
-  const refdatebirth = useRef();
-  const refstartdate = useRef();
-  const refstreet = useRef();
-  const refcity = useRef();
-  const refstate = useRef();
-  const refzipcode = useRef();
-  const refdepartement = useRef();
-
   //const navigate = useNavigate();
 
   const handleClickBirth = (event) => {
@@ -280,35 +270,34 @@ function CustomerForm() {
     refstart.current.style.display = 'block';
   };
 
-  useEffect(() => {
-    const handleUnClick = (event) => {
-      event.preventDefault();
-      if (event.target.type === 'submit') {
-        event.target.checkValidity();
-        let employee = { firstName: reffirstname.current.value, lastName: reflastname.current.value, startDate: refstartdate.current.value, department: refdepartement.current.value, dateBirth: refdatebirth.current.value, street: refcity.current.value, city: refcity.current.value, state: refstate.current.value, zipCode: refzipcode.current.value };
-        dispatch(save(employee))
-        setIsOpen(true);
-        //navigate('/')
-      } 
+  const handleUnClick = (event) => {
+    console.log(event.target)
+    document.body.addEventListener('click', (event)=>{
       if(formref.current){
         if (formref.current.contains(event.target) || refbirth.current.contains(event.target) || refstart.current.contains(event.target)) {
             if(event.target.id === 'startDate' && refbirth.current.style.display === 'block'){
                 refbirth.current.style.display = 'none'
             }else if (event.target.id === 'dateBirth' && refstart.current.style.display === 'block'){
                 refstart.current.style.display = 'none'
+            }else if ((event.target.id !== 'startDate' && event.target.id !== 'dateBirth') && (refstart.current.style.display === 'block' || refbirth.current.style.display === 'block')){
+              refbirth.current.style.display = 'none';
+              refstart.current.style.display = 'none';
             }
         } else {
           refbirth.current.style.display = 'none';
           refstart.current.style.display = 'none';
         }
       }
-    };
-    document.body.addEventListener('click', handleUnClick);
-  }, []);
+    })
+
+  }
 
   const saveEmployee = (event) => {
     event.preventDefault();
-    console.log('call modal');
+    const data = new FormData(event.target);
+    let employee = { firstName: data.get('firstName'), lastName: data.get('lastName'), startDate: data.get('startDate'), department: data.get('department'), dateBirth: data.get('dateBirth'), street: data.get('street'), city: data.get('city'), state: data.get('state'), zipCode: data.get('zipCode') };
+    dispatch(save(employee))
+    setIsOpen(true);
   };
 
   return (
@@ -321,39 +310,39 @@ function CustomerForm() {
         <h2>Create Employee</h2>
         <form ref={formref} onSubmit={saveEmployee}>
           <label htmlFor="firstName">First Name</label>
-          <input ref={reffirstname} type="text" id="firstName" minLength="3" />
+          <input type="text" id="firstName" name="firstName" minLength="3" required/>
 
           <label htmlFor="lastName">Last Name</label>
-          <input ref={reflastname} type="text" id="lastName" minLength="3" />
+          <input type="text" id="lastName" name="lastName" minLength="3" required/>
 
           <label htmlFor="dateBirth">Date of Birth</label>
-          <input ref={refdatebirth} onFocus={handleClickBirth} defaultValue={selectedBirth ? format(selectedBirth, 'dd/MM/yyyy') : ''} type="text" id="dateBirth" required />
+          <input name='dateBirth' onFocus={handleClickBirth} onBlur={handleUnClick} defaultValue={selectedBirth ? format(selectedBirth, 'dd/MM/yyyy') : ''} type="text" id="dateBirth" required />
 
           <label htmlFor="startDate">Start Date</label>
-          <input ref={refstartdate} onFocus={handleClickStart} defaultValue={selectedStart ? format(selectedStart, 'dd/MM/yyyy') : ''} type="text" id="startDate" required />
+          <input name='startDate' onFocus={handleClickStart} onBlur={handleUnClick} defaultValue={selectedStart ? format(selectedStart, 'dd/MM/yyyy') : ''} type="text" id="startDate" required />
 
           <fieldset className="address">
             <legend>Address</legend>
 
             <label htmlFor="street">Street</label>
-            <input ref={refstreet} id="street" type="text" minLength="3" required />
+            <input name="street" id="street" type="text" minLength="3" required />
 
             <label htmlFor="city">City</label>
-            <input ref={refcity} id="city" type="text" minLength="3" required />
+            <input id="city" name="city" type="text" minLength="3" required />
 
             <label htmlFor="state">State</label>
-            <select ref={refstate} name="state" id="state">
+            <select name="state" id="state">
               {statesDB.map((state, index) => (
                 <option key={index}>{state.name}</option>
               ))}
             </select>
 
             <label htmlFor="zipCode">Zip Code</label>
-            <input ref={refzipcode} id="zipCode" type="number" minLength="3" required />
+            <input id="zipCode" name="zipCode" type="number" minLength="3" required />
           </fieldset>
 
           <label htmlFor="department">Department</label>
-          <select ref={refdepartement} className="department" id="department">
+          <select className="department" id="department" name='department'>
             <option>Sales</option>
             <option>Human resources</option>
             <option>Marketing</option>

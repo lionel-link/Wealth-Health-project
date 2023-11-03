@@ -57,7 +57,7 @@ export const userSlice = createSlice({
   reducers: {
     save: (state, action) => {
       const { payload } = action;
-      payload.id = state.employee.length-1
+      payload.id = state.employee.length+1
       state.employee = [...state.employee, payload];
       console.log(state.employee)
       
